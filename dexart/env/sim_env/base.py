@@ -10,7 +10,9 @@ from sapien.utils import Viewer
 
 from dexart.env.sim_env.constructor import get_engine_and_renderer, add_default_scene_light
 from dexart.utils.random_utils import np_random
-
+from PIL import Image
+import numpy as np
+import os
 
 def recover_action(action, limit):
     action = (action + 1) / 2 * (limit[:, 1] - limit[:, 0]) + limit[:, 0]
@@ -71,9 +73,55 @@ class BaseSimulationEnv(object):
     def set_seed(self, seed=None):
         self.seed(seed)
 
-    def render(self, mode="human"):
+    def capture_rgb_images(self, resize_size=224, step=None, episode=None, save_dir=None, **kwargs):
+        """
+        Capture RGB images from predefined cameras, resize them, and return as a dictionary.
+        Optionally saves the images if `save_dir` is provided.
+
+        Args:
+            resize_size (int): Size to resize the output images to (square).
+            step (int, optional): Current step index (used for saving filenames).
+            episode (int, optional): Current episode index (used for saving path).
+            save_dir (str, optional): If provided, saves images to this directory.
+
+        Returns:
+            dict[str, np.ndarray]: Mapping from camera name to [resize_size, resize_size, 3] uint8 RGB image.
+        """
+        cam_names = ["bucket_viz", "faucet_viz", "faucet_viz2"]
+        result = {}
+
+        self.scene.step()
+        self.scene.update_render()
+
+        for cam_name in cam_names:
+            cam = self.cameras.get(cam_name)
+            if cam is None:
+                raise ValueError(f"Camera '{cam_name}' not found in environment.")
+
+            cam.take_picture()
+            rgba = cam.get_color_rgba()  # [H, W, 4] float32 in [0, 1]
+            if rgba is None:
+                raise RuntimeError(f"Camera '{cam_name}' failed to capture image.")
+
+            rgb = (rgba[..., :3] * 255).clip(0, 255).astype("uint8")  # [H, W, 3]
+            rgb_resized = np.array(Image.fromarray(rgb).resize((resize_size, resize_size), Image.Resampling.LANCZOS))
+            result[cam_name] = rgb_resized
+
+            if save_dir is not None and step is not None and episode is not None:
+                episode_dir = os.path.join(save_dir, f"episode_{episode}")
+                os.makedirs(episode_dir, exist_ok=True)
+                save_path = os.path.join(episode_dir, f"{cam_name}_step_{step}.png")
+                Image.fromarray(rgb_resized).save(save_path)
+                print(f"[Saved] {save_path}")
+
+        return result
+
+    def render(self, mode="human", **kwargs):
         assert self.use_gui
-        if mode == 'human':
+        if mode == "rgb_array":
+            return self.capture_rgb_images(**kwargs)  # get UI-free observation as input to the policy
+                                                      # Note that the function could also directly save the image.
+        elif mode == 'human':
             if self.viewer is None:
                 self.viewer = Viewer(self.renderer)
                 self.viewer.set_scene(self.scene)

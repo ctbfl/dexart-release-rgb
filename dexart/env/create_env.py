@@ -52,7 +52,7 @@ def create_env(task_name, use_visual_obs, use_gui=False, is_eval=False, pc_seg=F
             # Specify imagination
             env.setup_imagination_config(task_setting.IMG_CONFIG[img_type])
     if is_eval:
-        env.setup_camera_from_config(task_setting.CAMERA_CONFIG["viz_only"])
+        env.setup_camera_from_config(task_setting.CAMERA_CONFIG["viz_only"]) # here we directly use the visualization camera for obs input to the policy
         add_default_scene_light(env.scene, env.renderer)
 
 

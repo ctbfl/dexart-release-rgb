@@ -88,12 +88,15 @@ CAMERA_CONFIG = {
             fov=np.deg2rad(69.4), resolution=(64, 64)),
     },
     "viz_only": {  # only for visualization (human), not for visual observation
+        # obs_view_1
         "faucet_viz": dict(position=np.array([-0.3, 0.6, 0.4]), look_at_dir=np.array([0.16, -0.7, -0.35]),
                            # from left side.
                            right_dir=np.array([-1.5, -2, 0]), fov=np.deg2rad(69.4), resolution=(1000, 1000)),
+        # obs_view_2
         "faucet_viz2": dict(
             pose=sapien.Pose(p=np.array([0, 0.8, 0.5]), q=transforms3d.euler.euler2quat(np.pi / 3, np.pi, 0)),
             fov=np.deg2rad(69.4), resolution=(1000, 1000)),
+        # obs_view_3
         "bucket_viz": dict(
             pose=sapien.Pose(p=np.array([0, 1, 0.5]), q=transforms3d.euler.euler2quat(np.pi / 2, np.pi, 0)),
             fov=np.deg2rad(69.4), resolution=(1000, 1000)),
@@ -134,6 +137,8 @@ OBS_CONFIG = {
                             "process_fn_kwargs": {"noise_level": 0.5}},
         },
     },
+    # If add here the rgb obs, it may return img with UI.
+    # See dexart.env.sim_env.base.BaseSimulationEnv.capture_rgb_images function for rgb observation.
 }
 
 # Imagination config type
