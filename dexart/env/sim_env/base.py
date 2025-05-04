@@ -11,7 +11,6 @@ from sapien.utils import Viewer
 from dexart.env.sim_env.constructor import get_engine_and_renderer, add_default_scene_light
 from dexart.utils.random_utils import np_random
 from PIL import Image
-import numpy as np
 import os
 
 def recover_action(action, limit):
@@ -73,7 +72,7 @@ class BaseSimulationEnv(object):
     def set_seed(self, seed=None):
         self.seed(seed)
 
-    def capture_rgb_images(self, headless, resize_size=224, step=None, episode=None, save_dir=None, **kwargs):
+    def capture_rgb_images(self, resize_size=224, step=None, episode=None, save_dir=None, **kwargs):
         """
         Capture RGB images from predefined cameras, resize them, and return as a dictionary.
         Optionally saves the images if `save_dir` is provided.
