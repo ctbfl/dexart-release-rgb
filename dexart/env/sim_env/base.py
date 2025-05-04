@@ -73,7 +73,7 @@ class BaseSimulationEnv(object):
     def set_seed(self, seed=None):
         self.seed(seed)
 
-    def capture_rgb_images(self, resize_size=224, step=None, episode=None, save_dir=None, **kwargs):
+    def capture_rgb_images(self, headless, resize_size=224, step=None, episode=None, save_dir=None, **kwargs):
         """
         Capture RGB images from predefined cameras, resize them, and return as a dictionary.
         Optionally saves the images if `save_dir` is provided.
@@ -119,8 +119,8 @@ class BaseSimulationEnv(object):
     def render(self, mode="human", **kwargs):
         assert self.use_gui
         if mode == "rgb_array":
-            return self.capture_rgb_images(**kwargs)  # get UI-free observation as input to the policy
-                                                      # Note that the function could also directly save the image.
+            return self.capture_rgb_images(**kwargs) # get UI-free observation as input to the policy
+                                                     # Note that the function could also directly save the image.          
         elif mode == 'human':
             if self.viewer is None:
                 self.viewer = Viewer(self.renderer)

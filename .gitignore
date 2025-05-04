@@ -1,2 +1,6 @@
 assets/*
 *.pyc
+build/*
+tmp/*
+*.egg-info
+imgui.ini

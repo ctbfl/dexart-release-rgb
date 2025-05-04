@@ -53,7 +53,7 @@ class Evaluator:
 
     def init(self):
         obs = self.env.reset()
-        imgs = self.env.render(mode="rgb_array", headless=self.headless)
+        imgs = self.env.render(mode="rgb_array")
         if not self.headless:
             self.env.render(mode="human")
         obs.update(imgs)
@@ -64,7 +64,7 @@ class Evaluator:
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
-        imgs = self.env.render(mode="rgb_array", headless=)
+        imgs = self.env.render(mode="rgb_array")
         obs.update(imgs)
         """
             Observation format:
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     max_step = 100
     img_save_path = "./tmp"
     os.makedirs(img_save_path, exist_ok=True)
-    headless = False # !![DEBUG] Known issue: if headless=False, the obs img would contain UI elements!
+    headless = True # !![DEBUG] Known issue: if headless=False, the obs img would contain UI elements!
     save_img = True
 
     parser = argparse.ArgumentParser()
@@ -134,9 +134,9 @@ if __name__ == "__main__":
             print(f"Evaluation success at step {step}.")
             break
         if done:
-            print(f"Episode terminated at {step}, not success.")
+            print(f"Episode terminated at {step}, not successful.")
             break
         step += 1
         time.sleep(0.1)
     
-    print("Demo completed.")
+    print("Demo eval completed.")
